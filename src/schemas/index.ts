@@ -20,3 +20,8 @@ export const registerSchema = z
     message: "Las contraseñas no coinciden",
     path: ["password_confirmation"],
   })
+
+export const SuccessSchema = z.string().min(1, { message: "Cuenta Creada" })
+export const ErrorSchema = z.object({
+  error: z.string(),
+})

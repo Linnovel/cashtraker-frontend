@@ -1,14 +1,13 @@
 "use server"
 
-import { registerSchema } from "@/src/schemas"
+import { ErrorSchema, registerSchema, SuccessSchema } from "@/src/schemas"
 
 type ActionStateType = {
   errors: string[]
+  success: string
 }
 
 export async function register(prevState: ActionStateType, formData: FormData) {
-  console.log("datos del formulario", formData)
-
   // Extraer los datos del formulario para el crear el objeto de registro //Payload de registro
   const registerData = {
     email: formData.get("email"),
@@ -27,6 +26,8 @@ export async function register(prevState: ActionStateType, formData: FormData) {
     const errors = registerPayload.error?.issues.map((error) => error.message)
     return {
       errors,
+      //Si usas el prevState, mantienes lo que ya habia en el state, que es lo que esta en el Type
+      success: prevState.success,
     }
   }
 
@@ -52,9 +53,22 @@ export async function register(prevState: ActionStateType, formData: FormData) {
     }),
   })
 
+  //Mostrar mensaje de error o exito
   const json = await request.json()
-  console.log("respuesta del backend", json)
+
+  if (request.status == 409) {
+    const error = ErrorSchema.parse(await request.json())
+    return {
+      success: "",
+      errors: [error.error],
+    }
+  }
+
+  //Validar la respuesta exitosa para que no sea Any
+  const success = SuccessSchema.parse(json)
+
   return {
     errors: [],
+    success: success,
   }
 }

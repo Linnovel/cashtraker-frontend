@@ -1,23 +1,42 @@
 "use client"
 
 import { register } from "@/actions/create-account-action"
-import { useActionState } from "react"
+import React, { useActionState } from "react"
 import { useFormState } from "react-dom"
 import ErrorMessage from "../ui/ErrorMessage"
+import SuccessMessage from "../ui/SuccessMessage"
 
 function RegisterForm() {
+  //para  reiniciar el formulario cuando se crea la cuenta
+  const ref = React.useRef<HTMLFormElement>(null)
   // const [state, dispatch] = useActionState(register, null)
 
+  //LO que pongas en el state en el objeto, se pondre en el state
+  //Dispatch dispara la accion en el formulario
+  //Recuerda que el state inicial debe tener las mismas propiedades que el objeto que retorna la accion
   const [state, dispatch] = useFormState(register, {
     errors: [],
+    success: "",
   })
 
-  console.log("estado del formulario", state)
+  //PAra reiniciar el formulario cuando se crea la cuenta
+  React.useEffect(() => {
+    if (state.success) {
+      ref.current?.reset()
+    }
+  }, [state])
+
   return (
-    <form action={dispatch} className="mt-14 space-y-5 m-8" noValidate>
+    <form
+      ref={ref}
+      action={dispatch}
+      className="mt-14 space-y-5 m-8"
+      noValidate
+    >
       {state.errors.map((error) => (
         <ErrorMessage key={error}>{error}</ErrorMessage>
       ))}
+      {state.success && <SuccessMessage>{state.success}</SuccessMessage>}
       <div className="flex flex-col gap-2">
         <label className="font-bold text-2xl" htmlFor="email">
           Email
