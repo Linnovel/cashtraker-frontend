@@ -66,3 +66,23 @@ export const ResetPasswordSchema = z
     message: "Los Passwords no son iguales",
     path: ["password_confirmation"],
   })
+
+export const DraftBudgetSchema = z.object({
+  name: z
+    .string()
+    .min(1, { message: "El Nombre del presupuesto es obligatorio" }),
+  amount: z.coerce
+    .number({ message: "Cantidad no válida" })
+    .min(1, { message: "Cantidad no válida" }),
+})
+
+export const BudgetAPIResponseSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  amount: z.string(),
+  userId: z.number(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+})
+
+export const BudgetApiResponseSchema = z.array(BudgetAPIResponseSchema)
