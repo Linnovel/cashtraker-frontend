@@ -6,11 +6,12 @@ import { cache } from "react"
 import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
 import { UserSchema } from "../schemas"
+import getTokenFromCookies from "./token"
 
 // Verifies the session user by checking the token in cookies and fetching user data from the API
 //cache to memoize the function and avoid redundant calls
 export const verifySessionUSer = cache(async () => {
-  const token = cookies().get("CASHTRACKR_TOKEN")?.value
+  const token = getTokenFromCookies()
   if (!token) {
     redirect("/auth/login")
   }

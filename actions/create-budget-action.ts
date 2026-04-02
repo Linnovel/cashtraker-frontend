@@ -1,6 +1,7 @@
 "use server"
 
 import { DraftBudgetSchema, SuccessSchema } from "@/src/schemas"
+import { revalidatePath } from "next/cache"
 import { cookies } from "next/headers"
 
 type ActionState = {
@@ -10,7 +11,7 @@ type ActionState = {
 
 export async function createBudgetAction(
   prevState: ActionState,
-  formData: FormData
+  formData: FormData,
 ) {
   // Lógica para crear un nuevo presupuesto
 
@@ -47,10 +48,12 @@ export async function createBudgetAction(
 
   const json = await request.json()
 
+  revalidatePath("/admin")
+
   const success = SuccessSchema.parse(json)
 
   return {
     errors: [],
-    success: "Presupuesto creado exitosamente",
+    success: success,
   }
 }

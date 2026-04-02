@@ -1,30 +1,31 @@
 "use client"
 
-import { createBudgetAction } from "@/actions/create-budget-action"
+import React, { useEffect } from "react"
+import BudgetForm from "./BudgetForm"
+import { Budget } from "@/src/schemas"
 import { useFormState } from "react-dom"
+
+import { editBudgetAction } from "@/actions/edit-budget-actions"
 import ErrorMessage from "../ui/ErrorMessage"
-import React from "react"
 import { toast } from "react-toastify"
 import { useRouter } from "next/navigation"
-import BudgetForm from "./BudgetForm"
 
-export default function CreateBudgetForm() {
+interface EditBudgetFormProps {
+  budget: Budget
+}
+
+function EditBudgetForm({ budget }: EditBudgetFormProps) {
   const router = useRouter()
-  const [state, dispatch] = useFormState(createBudgetAction, {
+  const editBudgetWithId = editBudgetAction.bind(null, budget.id)
+  const [state, dispatch] = useFormState(editBudgetWithId, {
     errors: [],
     success: "",
   })
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (state.success) {
-      toast.success(state.success, {
-        onClose: () => {
-          router.push("/admin")
-        },
-        onClick: () => {
-          router.push("/admin")
-        },
-      })
+      toast.success(state.success)
+      router.push("/admin")
     }
   }, [state])
 
@@ -33,12 +34,14 @@ export default function CreateBudgetForm() {
       {state.errors.map((error) => (
         <ErrorMessage key={error}>{error}</ErrorMessage>
       ))}
-      <BudgetForm />
+      <BudgetForm budget={budget} />
       <input
         type="submit"
         className="bg-amber-500 w-full p-3 text-white uppercase font-bold hover:bg-amber-600 cursor-pointer transition-colors"
-        value="Crear Presupuesto"
+        value="Guardar cambios"
       />
     </form>
   )
 }
+
+export default EditBudgetForm
